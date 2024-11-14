@@ -24,6 +24,7 @@ export function throwUserError(message: string) {
     cc.newUserError().setText(message).throwException();
   } catch (e) {
     e.isConnectorThrownError = true;
+    e.connectorErrorMessage = message; // so we can inspect the message later
     throw e;
   }
 }

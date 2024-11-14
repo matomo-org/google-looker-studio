@@ -7,7 +7,7 @@
 
 import * as Api from './api';
 import cc from './connector';
-import { debugLog } from './log';
+import { log } from './log';
 
 export function getAuthType() {
     return cc.newAuthTypeResponse()
@@ -22,9 +22,18 @@ export function checkForValidCreds(instanceUrl?: string, token?: string) {
         instanceUrl,
         token,
     });
-    return Array.isArray(responseContent) && !!responseContent.length;
+
+    if (!Array.isArray(responseContent)) {
+      log('checkForValidCreds', `auth response is not an array (found ${typeof responseContent})`);
+      return false;
+    }
+
+    if (!!responseContent.length) {
+      log('checkForValidCreds', 'auth response is an empty array');
+      return false;
+    }
   } catch (error) {
-    debugLog('checkForValidCreds:', 'failed to get sites ID with parameters', error.stack || error.message);
+    log('checkForValidCreds', 'failed to get sites ID with parameters', error.connectorErrorMessage || error.stack || error.message);
     return false;
   }
 }
